@@ -18,10 +18,15 @@ jobs:
       run: |
         mkdir -p ~/.kube
         echo "${{ secrets.KUBECONFIG_BASE64 }}" | base64 --decode > ~/.kube/config
+        # Replace 127.0.0.1 with your EC2 IP (if needed)
+        sed -i "s/127.0.0.1/<YOUR_EC2_PUBLIC_IP>/g" ~/.kube/config
         chmod 600 ~/.kube/config
+
+    - name: Test Cluster Connectivity
+      run: kubectl cluster-info
 
     - name: Deploy Kubernetes Resources
       run: |
-        kubectl apply -f hello-world-nginx.yaml
+        kubectl apply -f hello-world-nginx.yaml --validate=false
         kubectl rollout status deployment/hello-world-nginx --timeout=90s
 
