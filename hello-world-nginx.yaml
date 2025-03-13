@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-world-nginx
+  labels:
+    app: hello-world-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-world-nginx
+  template:
+    metadata:
+      labels:
+        app: hello-world-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: html-volume
+          mountPath: /usr/share/nginx/html/index.html
+          subPath: index.html
+      volumes:
+      - name: html-volume
+        configMap:
+          name: html-configmap
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hello-world-service
+  labels:
+    app: hello-world-nginx
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30007 # Expose on port 30007 for external access.
+  selector:
+    app: hello-world-nginx
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: html-configmap
+data:
+  index.html: |
+    <html>
+      <body>
+        <h1>Hello World</h1>
+      </body>
+    </html>
+

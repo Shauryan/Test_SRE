@@ -1,0 +1,27 @@
+name: Deploy Hello World Nginx
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-to-k3s-cluster:
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout Codebase
+      uses: actions/checkout@v2
+
+    - name: Set Up kubeconfig
+      run: |
+        mkdir -p ~/.kube
+        echo "${{ secrets.KUBECONFIG_BASE64 }}" | base64 --decode > ~/.kube/config
+        chmod 600 ~/.kube/config
+
+    - name: Deploy Kubernetes Resources
+      run: |
+        kubectl apply -f hello-world-nginx.yaml
+        kubectl rollout status deployment/hello-world-nginx --timeout=90s
+
