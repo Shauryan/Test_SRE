@@ -19,7 +19,7 @@ jobs:
         mkdir -p ~/.kube
         echo "${{ secrets.KUBECONFIG_BASE64 }}" | base64 --decode > ~/.kube/config
         # Replace 127.0.0.1 with your EC2 IP (if needed)
-        sed -i "s/127.0.0.1/<YOUR_EC2_PUBLIC_IP>/g" ~/.kube/config
+        sed -i "s/127.0.0.1/54.165.178.121/g" ~/.kube/config
         chmod 600 ~/.kube/config
 
     - name: Test Cluster Connectivity
